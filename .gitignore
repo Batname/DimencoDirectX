@@ -1,0 +1,7 @@
+x64/*
+d3d11indices/x64/*
+d3d11indices/Debug/*
+*.VC.db
+*.VC.VC.opendb
+.vs/*
+*.exe
