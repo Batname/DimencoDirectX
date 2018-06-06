@@ -475,11 +475,12 @@ void DrawScene()
 	std::vector<float> RightEye = eyeTracking->RightEye;
 	std::vector<float> MiddleEye = eyeTracking->MiddleEye;
 
-	float width_cm_universal = width_cm / height_cm;
+	float AspectRatio = width_cm / height_cm;
+	float width_cm_universal = width_cm / height_cm * 100.f;
 	float height_cm_universal = 100.f;
 
 	float DebugScalar = 0.01f;
-	XMMATRIX Scale = XMMatrixScaling(DebugScalar * width_cm / height_cm, DebugScalar, 1.f);
+	XMMATRIX Scale = XMMatrixScaling(DebugScalar * AspectRatio, DebugScalar, 1.f);
 	XMMATRIX Translate = XMMatrixTranslation(MiddleEye[0] / (width_cm / 2.f), MiddleEye[1] / (height_cm / 2.f), 0.f);
 
 	//Set the World/View/Projection matrix, then send it to constant buffer in effect file
@@ -496,6 +497,7 @@ void DrawScene()
 	d3d11DevCon->VSSetConstantBuffers(0, 1, &cbPerObjectBuffer);
 	d3d11DevCon->PSSetConstantBuffers(0, 1, &cbPerObjectBuffer);
 
+	// Draw left viewport
 	{
 		D3D11_VIEWPORT viewport;
 		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -514,6 +516,7 @@ void DrawScene()
 		d3d11DevCon->DrawIndexed(6, 0, 0);
 	}
 
+	// Draw right viewport
 	{
 		D3D11_VIEWPORT viewport;
 		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
