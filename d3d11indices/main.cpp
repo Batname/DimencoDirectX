@@ -19,14 +19,17 @@
 EyeTracking* eyeTracking = nullptr;
 
 // Screen settings
-float ScreenWidth = 2560.f;
-float ScreenHeight = 1080.f;// 1080.f;//2160.f;
-float ScreenSizeInch = 29.f;
+float ScreenWidth = 5120.f;
+float ScreenHeight = 1440.f;
+
+float ScreenSizeInch = 65.f;
 float ScreenHeight_cm_Scale = 1.f;
 
-float pixelsize_cm = 0.f;
-float width_cm = 0.f;
-float height_cm = 0.f;
+float pixelsize_cm = 0.0186f;
+float DebugSquareScalar = 0.01f;
+float FPGAScreenWidth = 7680.f;
+float FPGAScreenHeight = 3840.f;
+
 
 
 //Global Declarations - Interfaces//
@@ -52,16 +55,8 @@ LPCTSTR WndClassName = L"firstwindow";
 HWND hwnd = NULL;
 HRESULT hr;
 
-///////////////**************new**************////////////////////
 XMMATRIX WVP;
 XMMATRIX World;
-XMMATRIX camView;
-XMMATRIX camProjection;
-
-XMVECTOR camPosition;
-XMVECTOR camTarget;
-XMVECTOR camUp;
-///////////////**************new**************////////////////////
 
 //Function Prototypes//
 bool InitializeDirect3d11App(HINSTANCE hInstance);
@@ -144,12 +139,6 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
 	// init eye tracking server
 	eyeTracking = new EyeTracking();
 	eyeTracking->ListenCamerasUDP();
-
-	// Screen settings
-	// Set screen dementions
-	pixelsize_cm = (float)((ScreenSizeInch * 2.54) / sqrt(ScreenWidth * ScreenWidth + ScreenHeight * ScreenHeight));
-	width_cm = (float)(ScreenWidth * pixelsize_cm);
-	height_cm = (float)(ScreenHeight * pixelsize_cm) * ScreenHeight_cm_Scale;
 
 	if (!InitializeWindow(hInstance, nShowCmd, ScreenWidth, ScreenHeight, true))
 	{
@@ -272,7 +261,7 @@ bool InitializeDirect3d11App(HINSTANCE hInstance)
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = hwnd;
-	swapChainDesc.Windowed = TRUE;
+	swapChainDesc.Windowed = 0; // TRUE;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
@@ -427,7 +416,6 @@ bool InitScene()
 	//Set the Viewport
 	d3d11DevCon->RSSetViewports(1, &viewport);
 
-	///////////////**************new**************////////////////////
 	//Create the buffer to send to the cbuffer in effect file
 	D3D11_BUFFER_DESC cbbd;
 	ZeroMemory(&cbbd, sizeof(D3D11_BUFFER_DESC));
@@ -439,18 +427,6 @@ bool InitScene()
 	cbbd.MiscFlags = 0;
 
 	hr = d3d11Device->CreateBuffer(&cbbd, NULL, &cbPerObjectBuffer);
-
-	//Camera information
-	camPosition = XMVectorSet(0.0f, 0.0f, -0.5f, 0.0f);
-	camTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	//Set the View matrix
-	camView = XMMatrixLookAtLH(camPosition, camTarget, camUp);
-
-	//Set the Projection matrix
-	camProjection = XMMatrixPerspectiveFovLH(0.4f*3.14f, (float)ScreenWidth / ScreenHeight, 1.0f, 1000.0f);
-	///////////////**************new**************////////////////////
 
 	return true;
 }
@@ -475,18 +451,13 @@ void DrawScene()
 	std::vector<float> RightEye = eyeTracking->RightEye;
 	std::vector<float> MiddleEye = eyeTracking->MiddleEye;
 
-	float AspectRatio = width_cm / height_cm;
-	float width_cm_universal = width_cm / height_cm * 100.f;
-	float height_cm_universal = 100.f;
+	XMMATRIX Scale = XMMatrixScaling(DebugSquareScalar, DebugSquareScalar, 1.f);
 
-	float DebugScalar = 0.01f;
-	XMMATRIX Scale = XMMatrixScaling(DebugScalar * AspectRatio, DebugScalar, 1.f);
-	XMMATRIX Translate = XMMatrixTranslation(MiddleEye[0] / (width_cm / 2.f), MiddleEye[1] / (height_cm / 2.f), 0.f);
+	XMMATRIX Translate = XMMatrixTranslation(pixelsize_cm * FPGAScreenWidth / ScreenWidth / DebugSquareScalar * MiddleEye[0] / 2.f,
+		pixelsize_cm * FPGAScreenHeight / ScreenHeight / DebugSquareScalar * MiddleEye[1] / 2.f, 0.f);
 
-	//Set the World/View/Projection matrix, then send it to constant buffer in effect file
-	World = XMMatrixIdentity() * Scale * Translate;
-
-	WVP = World * camView * camProjection;
+	World = Translate * Scale;
+	WVP = World;
 
 	cbPerObj.WVP = XMMatrixTranspose(WVP);
 	cbPerObj.viewRect[0] = ScreenWidth;
