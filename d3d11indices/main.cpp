@@ -115,26 +115,26 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
 {
 
 	// allocate console
-	{
-		AllocConsole();
+	//{
+	//	AllocConsole();
 
-		HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
-		int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
-		FILE* hf_out = _fdopen(hCrt, "w");
-		setvbuf(hf_out, NULL, _IONBF, 1);
-		*stdout = *hf_out;
+	//	HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
+	//	int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
+	//	FILE* hf_out = _fdopen(hCrt, "w");
+	//	setvbuf(hf_out, NULL, _IONBF, 1);
+	//	*stdout = *hf_out;
 
-		HANDLE handle_in = GetStdHandle(STD_INPUT_HANDLE);
-		hCrt = _open_osfhandle((long)handle_in, _O_TEXT);
-		FILE* hf_in = _fdopen(hCrt, "r");
-		setvbuf(hf_in, NULL, _IONBF, 128);
-		*stdin = *hf_in;
+	//	HANDLE handle_in = GetStdHandle(STD_INPUT_HANDLE);
+	//	hCrt = _open_osfhandle((long)handle_in, _O_TEXT);
+	//	FILE* hf_in = _fdopen(hCrt, "r");
+	//	setvbuf(hf_in, NULL, _IONBF, 128);
+	//	*stdin = *hf_in;
 
-		AttachConsole(GetCurrentProcessId());
-		freopen("CON", "w", stdout);
+	//	AttachConsole(GetCurrentProcessId());
+	//	freopen("CON", "w", stdout);
 
-		printf("HELLO!!! I AM THE CONSOLE!");
-	}
+	//	printf("HELLO!!! I AM THE CONSOLE!");
+	//}
 
 	// init eye tracking server
 	eyeTracking = new EyeTracking();
@@ -261,9 +261,9 @@ bool InitializeDirect3d11App(HINSTANCE hInstance)
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = hwnd;
-	swapChainDesc.Windowed = 0; // TRUE;
+	swapChainDesc.Windowed = 1; // TRUE;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	//swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 
 	//Create our SwapChain
@@ -344,10 +344,10 @@ bool InitScene()
 	//Create the vertex buffer
 	Vertex v[] =
 	{
-		Vertex(-1.0f, -1.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f),
-		Vertex(-1.0f,  1.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f),
-		Vertex(1.0f,  1.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f),
-		Vertex(1.0f, -1.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f),
+		Vertex(-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f),
+		Vertex(-1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f),
+		Vertex(1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f),
+		Vertex(1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f),
 	};
 
 	DWORD indices[] = {
