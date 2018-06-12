@@ -16,7 +16,7 @@
 #include <fcntl.h>
 
 // Eye tracking
-EyeTracking* eyeTracking = nullptr;
+EyeTracking eyeTracking;
 
 // Screen settings
 float ScreenWidth = 5120.f;
@@ -139,8 +139,7 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
 	//}
 
 	// init eye tracking server
-	eyeTracking = new EyeTracking();
-	eyeTracking->ListenCamerasUDP();
+	eyeTracking.ListenCamerasUDP();
 
 	if (!InitializeWindow(hInstance, nShowCmd, ScreenWidth, ScreenHeight, FullScreen))
 	{
@@ -344,7 +343,7 @@ void CleanUp()
 	///////////////**************new**************////////////////////
 
 	// stop eye tracking listener
-	eyeTracking->CloseCamerasUDP();
+	eyeTracking.CloseCamerasUDP();
 }
 
 bool InitScene()
@@ -467,9 +466,9 @@ void DrawScene()
 
 
 	// recieve last data from eye tracking
-	std::vector<float> LeftEye = eyeTracking->LeftEye;
-	std::vector<float> RightEye = eyeTracking->RightEye;
-	std::vector<float> MiddleEye = eyeTracking->MiddleEye;
+	std::vector<float> LeftEye = eyeTracking.LeftEye;
+	std::vector<float> RightEye = eyeTracking.RightEye;
+	std::vector<float> MiddleEye = eyeTracking.MiddleEye;
 
 	XMMATRIX Scale = XMMatrixScaling(DebugSquareScalar, DebugSquareScalar, 1.f);
 
