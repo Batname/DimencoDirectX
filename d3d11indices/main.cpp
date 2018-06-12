@@ -32,7 +32,7 @@ float FPGAScreenHeight = 3840.f;
 
 
 // is window full screen?
-bool FullScreen = true;
+bool FullScreen = false;
 
 //Global Declarations - Interfaces//
 IDXGISwapChain* SwapChain;
