@@ -15,6 +15,14 @@
 #include <io.h>
 #include <fcntl.h>
 
+#include <mmsystem.h>
+
+#pragma comment(lib, "winmm.lib")
+
+// frame limit
+DWORD dwFPSLimit = 0; // Or however many frames per second
+DWORD dwCurrentTime = timeGetTime();
+
 // Eye tracking
 EyeTracking eyeTracking;
 
@@ -457,6 +465,17 @@ void UpdateScene()
 
 void DrawScene()
 {
+	if (dwFPSLimit > 0)
+	{
+		static DWORD dwLastFrameTime = 0;
+		dwCurrentTime = timeGetTime();
+		if ((dwCurrentTime - dwLastFrameTime) < (1000 / dwFPSLimit)) // 1000 miliseconds in a second.
+		{
+			return;
+		}
+		dwLastFrameTime = dwCurrentTime;
+	}
+
 	//Clear our backbuffer
 	float bgColor[4] = { (0.0f, 0.0f, 0.0f, 0.0f) };
 	d3d11DevCon->ClearRenderTargetView(renderTargetView, bgColor);
@@ -524,8 +543,6 @@ void DrawScene()
 		//Draw the triangle
 		d3d11DevCon->DrawIndexed(6, 0, 0);
 	}
-
-	//std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 
 	//Present the backbuffer to the screen
