@@ -31,6 +31,8 @@ float FPGAScreenWidth = 7680.f;
 float FPGAScreenHeight = 3840.f;
 
 
+// is window full screen?
+bool FullScreen = true;
 
 //Global Declarations - Interfaces//
 IDXGISwapChain* SwapChain;
@@ -140,7 +142,7 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
 	eyeTracking = new EyeTracking();
 	eyeTracking->ListenCamerasUDP();
 
-	if (!InitializeWindow(hInstance, nShowCmd, ScreenWidth, ScreenHeight, true))
+	if (!InitializeWindow(hInstance, nShowCmd, ScreenWidth, ScreenHeight, FullScreen))
 	{
 		MessageBox(0, L"Window Initialization - Failed",
 			L"Error", MB_OK);
@@ -171,8 +173,18 @@ int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
 bool InitializeWindow(HINSTANCE hInstance,
 	int ShowWnd,
 	int width, int height,
-	bool windowed)
+	bool fullscreen)
 {
+
+	if (fullscreen)
+	{
+		HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO mi = { sizeof(mi) };
+		GetMonitorInfo(hmon, &mi);
+		ScreenWidth = mi.rcMonitor.right - mi.rcMonitor.left;
+		ScreenHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
+	}
+
 	typedef struct _WNDCLASS {
 		UINT cbSize;
 		UINT style;
@@ -229,6 +241,11 @@ bool InitializeWindow(HINSTANCE hInstance,
 		return 1;
 	}
 
+	if (fullscreen)
+	{
+		SetWindowLong(hwnd, GWL_STYLE, 0);
+	}
+
 	ShowWindow(hwnd, ShowWnd);
 	UpdateWindow(hwnd);
 	
@@ -264,9 +281,9 @@ bool InitializeDirect3d11App(HINSTANCE hInstance)
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = hwnd;
-	swapChainDesc.Windowed = 1; // TRUE;
+	swapChainDesc.Windowed = !FullScreen;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	//swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 
 	//Create our SwapChain
