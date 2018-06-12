@@ -212,9 +212,9 @@ bool InitializeWindow(HINSTANCE hInstance,
 	hwnd = CreateWindowEx(
 		NULL,
 		WndClassName,
-		L"Lesson 4 - Begin Drawing",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT,
+		L"Dimenco DirectX11",
+		WS_POPUP, // make it windowed fullscreen
+		0,0,
 		width, height,
 		NULL,
 		NULL,
@@ -231,7 +231,10 @@ bool InitializeWindow(HINSTANCE hInstance,
 
 	ShowWindow(hwnd, ShowWnd);
 	UpdateWindow(hwnd);
-
+	
+	// make it windowed fullscreen
+	//SetWindowLongPtr(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);
+	//SetWindowPos(hwnd, HWND_TOP, 0, 0, width, height, SWP_FRAMECHANGED);
 	return true;
 }
 
@@ -534,7 +537,7 @@ int messageloop() {
 			DispatchMessage(&msg);
 		}
 		else {
-			// run game code            
+			// run game code     
 			UpdateScene();
 			DrawScene();
 		}
