@@ -20,7 +20,7 @@
 #pragma comment(lib, "winmm.lib")
 
 // frame limit
-DWORD dwFPSLimit = 0; // Or however many frames per second
+DWORD dwFPSLimit = 120; // Or however many frames per second
 DWORD dwCurrentTime = timeGetTime();
 
 // Eye tracking
@@ -40,7 +40,7 @@ float FPGAScreenHeight = 3840.f;
 
 
 // is window full screen?
-bool FullScreen = false;
+bool FullScreen = true;
 
 //Global Declarations - Interfaces//
 IDXGISwapChain* SwapChain;
